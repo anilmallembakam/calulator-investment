@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Return Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #fdfbf7;
+            --ink: #1a1a1a;
+            --accent: #2d5a3d;
+            --accent-light: #4a8c5f;
+            --gold: #c9a961;
+            --border: #e5dfcf;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, #f5f0e8 100%);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .input-section {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px var(--shadow);
+            border: 1px solid var(--border);
+            animation: slideRight 0.8s ease-out 0.2s backwards;
+        }
+
+        @keyframes slideRight {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .input-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--ink);
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--cream);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .input-with-symbol {
+            position: relative;
+        }
+
+        .input-with-symbol span {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        button {
+            width: 100%;
+            padding: 1.1rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'IBM Plex Sans', sans-serif;
+            letter-spacing: 0.05em;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(45, 90, 61, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .results-section {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px var(--shadow);
+            border: 1px solid var(--border);
+            animation: slideLeft 0.8s ease-out 0.3s backwards;
+        }
+
+        @keyframes slideLeft {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .results-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--cream) 0%, #faf7f0 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px var(--shadow);
+        }
+
+        .summary-card-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 500;
+        }
+
+        .summary-card-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            animation: fadeInUp 0.8s ease-out 0.5s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1rem;
+        }
+
+        thead {
+            background: var(--accent);
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s ease;
+        }
+
+        tr:hover td {
+            background: var(--cream);
+        }
+
+        tr:last-child td:first-child {
+            border-bottom-left-radius: 8px;
+        }
+
+        tr:last-child td:last-child {
+            border-bottom-right-radius: 8px;
+        }
+
+        .currency {
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        .percentage {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 968px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-text {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 0.3rem;
+        }
+
+        .highlight-text {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .annual-equivalent {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Investment Calculator</h1>
+            <p class="subtitle">Enter weekly returns and see compounded growth projections</p>
+        </header>
+
+        <div class="calculator-grid">
+            <div class="input-section">
+                <h2>Investment Details</h2>
+                <form id="calculatorForm">
+                    <div class="form-group">
+                        <label for="initialAmount">Initial Investment Amount</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="initialAmount" value="10000" min="0" step="100" required>
+                            <span>$</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recurringAmount">Recurring Investment (Optional)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="recurringAmount" value="0" min="0" step="10">
+                            <span>$</span>
+                        </div>
+                        <p class="info-text">Default: $0</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recurringFrequency">Recurring Frequency</label>
+                        <select id="recurringFrequency">
+                            <option value="daily">Daily</option>
+                            <option value="weekly" selected>Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weeklyReturn">Weekly Return Rate</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="weeklyReturn" value="0.5" min="-100" max="1000" step="0.01" required>
+                            <span>%</span>
+                        </div>
+                        <div class="annual-equivalent" id="annualEquivalent">
+                            Compounded Annual Return: <strong class="highlight-text">29.45%</strong>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="yearsToProject">Years to Project</label>
+                        <input type="number" id="yearsToProject" value="15" min="1" max="50" step="1" required>
+                        <p class="info-text">Calculate projections up to 50 years</p>
+                    </div>
+
+                    <button type="submit">Calculate Returns</button>
+                </form>
+            </div>
+
+            <div class="results-section">
+                <h2>Projected Returns</h2>
+                <div id="resultsContent">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18"></path>
+                            <path d="M18 17l-5-5-3 3-4-4"></path>
+                        </svg>
+                        <p>Enter your investment details and click "Calculate Returns" to see your projections</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('calculatorForm');
+        const resultsContent = document.getElementById('resultsContent');
+        const weeklyReturnInput = document.getElementById('weeklyReturn');
+        const annualEquivalentText = document.getElementById('annualEquivalent');
+
+        // Update annual equivalent when weekly return changes
+        weeklyReturnInput.addEventListener('input', updateAnnualEquivalent);
+
+        function updateAnnualEquivalent() {
+            const weeklyReturn = parseFloat(weeklyReturnInput.value) || 0;
+            
+            // Calculate annual return: (1 + weekly_rate)^52 - 1
+            const annualReturn = (Math.pow(1 + weeklyReturn/100, 52) - 1) * 100;
+            annualEquivalentText.innerHTML = `Compounded Annual Return: <strong class="highlight-text">${annualReturn.toFixed(2)}%</strong>`;
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateReturns();
+        });
+
+        function calculateReturns() {
+            // Get input values
+            const initialAmount = parseFloat(document.getElementById('initialAmount').value) || 0;
+            const recurringAmount = parseFloat(document.getElementById('recurringAmount').value) || 0;
+            const recurringFrequency = document.getElementById('recurringFrequency').value;
+            const weeklyReturnRate = parseFloat(document.getElementById('weeklyReturn').value) || 0;
+            const yearsToProject = parseInt(document.getElementById('yearsToProject').value) || 15;
+
+            // Weekly return as decimal
+            const weeklyRate = weeklyReturnRate / 100;
+            const weeksPerYear = 52;
+
+            // Recurring payment frequency
+            const frequencyMap = {
+                'daily': 365,
+                'weekly': 52,
+                'monthly': 12
+            };
+            const recurringPerYear = frequencyMap[recurringFrequency];
+
+            // Calculate for each year
+            const yearlyResults = [];
+            let currentValue = initialAmount;
+            let totalContributed = initialAmount;
+
+            for (let year = 1; year <= yearsToProject; year++) {
+                // Track start of year values
+                const startOfYearValue = currentValue;
+                const startOfYearContributed = totalContributed;
+
+                // Process each week of the year
+                for (let week = 1; week <= weeksPerYear; week++) {
+                    // Apply weekly return (compounding)
+                    currentValue = currentValue * (1 + weeklyRate);
+                    
+                    // Add recurring payments
+                    if (recurringAmount > 0) {
+                        // Calculate if payment occurs this week
+                        if (recurringFrequency === 'daily') {
+                            // Daily payments: add 7 days worth per week
+                            currentValue += recurringAmount * 7;
+                            totalContributed += recurringAmount * 7;
+                        } else if (recurringFrequency === 'weekly') {
+                            // Weekly payments: add every week
+                            currentValue += recurringAmount;
+                            totalContributed += recurringAmount;
+                        } else if (recurringFrequency === 'monthly') {
+                            // Monthly payments: approximately every 4.33 weeks
+                            if (week % 4 === 0 || week === weeksPerYear) {
+                                currentValue += recurringAmount;
+                                totalContributed += recurringAmount;
+                            }
+                        }
+                    }
+                }
+
+                // Calculate year-end metrics
+                const totalGain = currentValue - totalContributed;
+                const cumulativeROI = totalContributed > 0 ? (totalGain / totalContributed) * 100 : 0;
+                
+                // Annual return rate (compounded weekly)
+                const annualReturn = (Math.pow(1 + weeklyRate, weeksPerYear) - 1) * 100;
+                
+                // Actual growth for this year (excluding new contributions)
+                const contributionsThisYear = totalContributed - startOfYearContributed;
+                const actualGrowth = currentValue - startOfYearValue;
+                const growthFromReturns = actualGrowth - contributionsThisYear;
+                const actualYearReturn = startOfYearValue > 0 ? (growthFromReturns / startOfYearValue) * 100 : 0;
+
+                yearlyResults.push({
+                    year,
+                    totalValue: currentValue,
+                    totalContributed,
+                    totalGain,
+                    cumulativeROI,
+                    annualReturn,
+                    actualYearReturn,
+                    contributionsThisYear
+                });
+            }
+
+            displayResults(yearlyResults, weeklyReturnRate);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        function formatPercentage(percent) {
+            return percent.toFixed(2) + '%';
+        }
+
+        function displayResults(yearlyResults, weeklyReturn) {
+            const lastResult = yearlyResults[yearlyResults.length - 1];
+            const annualReturn = yearlyResults[0].annualReturn;
+            
+            let html = `
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-card-label">Final Value (${lastResult.year} years)</div>
+                        <div class="summary-card-value">${formatCurrency(lastResult.totalValue)}</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-label">Total Gain (${lastResult.year} years)</div>
+                        <div class="summary-card-value">${formatCurrency(lastResult.totalGain)}</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-label">Compounded Annual Return</div>
+                        <div class="summary-card-value">${formatPercentage(annualReturn)}</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-label">Total ROI (${lastResult.year} years)</div>
+                        <div class="summary-card-value">${formatPercentage(lastResult.cumulativeROI)}</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Annual Return</th>
+                                <th>Total Value</th>
+                                <th>Contributed</th>
+                                <th>Earnings</th>
+                                <th>Cumulative ROI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            yearlyResults.forEach((result) => {
+                html += `
+                    <tr>
+                        <td><strong>Year ${result.year}</strong></td>
+                        <td class="percentage">${formatPercentage(result.annualReturn)}</td>
+                        <td class="currency">${formatCurrency(result.totalValue)}</td>
+                        <td>${formatCurrency(result.totalContributed)}</td>
+                        <td class="currency">${formatCurrency(result.totalGain)}</td>
+                        <td class="percentage">${formatPercentage(result.cumulativeROI)}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #666; font-style: italic;">
+                    Based on ${weeklyReturn}% weekly return, compounded 52 times per year
+                </p>
+            `;
+
+            resultsContent.innerHTML = html;
+        }
+
+        // Auto-calculate on page load with default values
+        window.addEventListener('load', function() {
+            updateAnnualEquivalent();
+            calculateReturns();
+        });
+    </script>
+</body>
+</html>
