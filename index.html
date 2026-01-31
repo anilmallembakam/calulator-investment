@@ -37,7 +37,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -76,9 +76,10 @@
 
         .calculator-grid {
             display: grid;
-            grid-template-columns: 1fr 1.2fr;
+            grid-template-columns: 400px 1fr;
             gap: 2rem;
             margin-bottom: 3rem;
+            align-items: start;
         }
 
         .input-section {
@@ -88,6 +89,8 @@
             box-shadow: 0 8px 30px var(--shadow);
             border: 1px solid var(--border);
             animation: slideRight 0.8s ease-out 0.2s backwards;
+            position: sticky;
+            top: 2rem;
         }
 
         @keyframes slideRight {
@@ -187,6 +190,7 @@
             box-shadow: 0 8px 30px var(--shadow);
             border: 1px solid var(--border);
             animation: slideLeft 0.8s ease-out 0.3s backwards;
+            min-height: 600px;
         }
 
         @keyframes slideLeft {
@@ -247,7 +251,12 @@
 
         .table-container {
             overflow-x: auto;
+            overflow-y: auto;
+            max-height: 600px;
             animation: fadeInUp 0.8s ease-out 0.5s backwards;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-top: 1rem;
         }
 
         @keyframes fadeInUp {
@@ -261,16 +270,38 @@
             }
         }
 
+        /* Custom scrollbar */
+        .table-container::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: var(--cream);
+            border-radius: 5px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 5px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-light);
+        }
+
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 1rem;
         }
 
         thead {
             background: var(--accent);
             color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         th {
@@ -280,6 +311,7 @@
             font-size: 0.9rem;
             letter-spacing: 0.05em;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         th:first-child {
@@ -294,18 +326,15 @@
             padding: 1rem;
             border-bottom: 1px solid var(--border);
             transition: background 0.2s ease;
+            white-space: nowrap;
         }
 
-        tr:hover td {
+        tbody tr:hover td {
             background: var(--cream);
         }
 
-        tr:last-child td:first-child {
-            border-bottom-left-radius: 8px;
-        }
-
-        tr:last-child td:last-child {
-            border-bottom-right-radius: 8px;
+        tbody tr:last-child td {
+            border-bottom: none;
         }
 
         .currency {
@@ -332,9 +361,23 @@
             opacity: 0.3;
         }
 
-        @media (max-width: 968px) {
+        .table-footer {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--cream);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 1024px) {
             .calculator-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .input-section {
+                position: static;
             }
 
             h1 {
@@ -343,6 +386,10 @@
 
             .summary-cards {
                 grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                max-height: 400px;
             }
         }
 
@@ -615,9 +662,9 @@
                         </tbody>
                     </table>
                 </div>
-                <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #666; font-style: italic;">
-                    Based on ${weeklyReturn}% weekly return, compounded 52 times per year
-                </p>
+                <div class="table-footer">
+                    📊 Based on ${weeklyReturn}% weekly return, compounded 52 times per year
+                </div>
             `;
 
             resultsContent.innerHTML = html;
